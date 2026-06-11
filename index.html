@@ -308,7 +308,9 @@
        FORM LOGIC
   ═══════════════════════════════════════ -->
   <script>
-    const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/soniakow@gmail.com';
+    // Web3Forms access key (tied to soniakow@gmail.com).
+    // Paste the key Sonia receives by email between the quotes below.
+    const WEB3FORMS_KEY = 'b631da10-7d63-48e3-b524-d88a5835825d';
 
     const form      = document.getElementById('rsvp-form');
     const submitBtn = document.getElementById('submit-btn');
@@ -334,12 +336,13 @@
       submitBtn.textContent = 'Sending...';
 
       try {
-        const res = await fetch(FORMSUBMIT_URL, {
+        const res = await fetch('https://api.web3forms.com/submit', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: JSON.stringify({
-            _subject:       'New RSVP: Sonia & Armin Marriage Celebration',
-            _captcha:       'false',
+            access_key: WEB3FORMS_KEY,
+            subject:    'New RSVP: Sonia & Armin Marriage Celebration',
+            from_name:  'Wedding RSVP',
             'First Name':   firstName,
             'Email':        email,
             'Friday Dinner (Jul 24)':  attendFriday,
@@ -349,11 +352,11 @@
         });
 
         const data = await res.json();
-        if (data.success === 'true' || data.success === true) {
+        if (data.success) {
           form.style.display      = 'none';
           successEl.style.display = 'block';
         } else {
-          throw new Error('Failed');
+          throw new Error(data.message || 'Failed');
         }
 
       } catch (err) {
