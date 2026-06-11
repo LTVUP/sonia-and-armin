@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSVP — Sonia &amp; Armin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bark:   '#1c1a14',
+            moss:   '#3a4a30',
+            sage:   '#5c7050',
+            amber:  '#c4903a',
+            gold:   '#d4a84b',
+            cream:  '#f0ead8',
+            parchment: '#e8dfc8',
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .hero-overlay {
+      background: linear-gradient(
+        to bottom,
+        rgba(16,14,10,0.65) 0%,
+        rgba(16,14,10,0.50) 40%,
+        rgba(16,14,10,0.82) 100%
+      );
+    }
+
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: #c4903a;
+      margin: 0 auto;
+    }
+
+    .form-input {
+      background: rgba(240, 234, 216, 0.07);
+      border: 1px solid rgba(196, 144, 58, 0.35);
+      color: #f0ead8;
+      font-size: 16px; /* prevents iOS auto-zoom on focus */
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-input::placeholder { color: rgba(240,234,216,0.4); }
+    .form-input:focus {
+      outline: none;
+      border-color: #c4903a;
+      background: rgba(240, 234, 216, 0.1);
+    }
+
+    /* Mobile touch improvements */
+    @media (max-width: 640px) {
+      .btn-rsvp { font-size: 1rem; padding-top: 1rem; padding-bottom: 1rem; }
+      label { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    }
+
+    .btn-rsvp {
+      background: #c4903a;
+      color: #1c1a14;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-rsvp:hover  { background: #d4a84b; transform: translateY(-1px); }
+    .btn-rsvp:active { transform: translateY(0); }
+
+    .photo-frame {
+      border: 1px solid rgba(196, 144, 58, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: sepia(20%) brightness(0.88) contrast(1.05);
+      transition: filter 0.3s;
+    }
+    .photo-frame:hover img { filter: sepia(10%) brightness(0.95) contrast(1.05); }
+
+    #success-msg { display: none; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeInUp 0.9s ease both; }
+    .delay-1 { animation-delay: 0.15s; }
+    .delay-2 { animation-delay: 0.3s; }
+    .delay-3 { animation-delay: 0.5s; }
+  </style>
+</head>
+<body class="bg-bark text-cream font-sans antialiased">
+
+  <!-- ═══════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════ -->
+  <section class="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden">
+
+    <img
+      src="hero.jpeg"
+      alt="Lasqueti, BC"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+    <div class="hero-overlay absolute inset-0"></div>
+
+    <div class="relative z-10 px-6 max-w-3xl mx-auto fade-in">
+      <p class="font-sans font-light tracking-[0.3em] text-amber text-xl sm:text-3xl uppercase mb-6">
+        You are invited
+      </p>
+      <h1 class="font-serif text-6xl sm:text-8xl md:text-9xl leading-none text-cream mb-2">
+        Sonia<br />&amp; Armin
+      </h1>
+      <p class="font-serif italic text-amber text-4xl sm:text-5xl md:text-6xl leading-tight mb-8">
+        Marriage Celebration
+      </p>
+      <div class="divider my-6"></div>
+      <p class="font-sans font-light text-parchment tracking-widest text-sm uppercase">
+        Friday, July 25th &nbsp;&bull;&nbsp; Trinity Valley, BC
+      </p>
+    </div>
+
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 fade-in delay-3">
+      <a href="#rsvp" class="block w-px h-12 bg-amber mx-auto opacity-60 hover:opacity-100 transition-opacity"></a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       DETAILS
+  ═══════════════════════════════════════ -->
+  <section class="py-16 sm:py-24 px-6 max-w-2xl mx-auto text-center">
+    <p class="font-sans font-light text-amber tracking-[0.18em] text-sm uppercase mb-6">The Details</p>
+    <h2 class="font-serif text-4xl sm:text-5xl text-cream mb-6">Out Here in the Wild</h2>
+    <div class="divider mb-8"></div>
+    <p class="font-sans font-normal text-cream/90 leading-relaxed text-lg sm:text-xl">
+      We are hosting a marriage celebration at our home, in the middle of nowhere, exactly as we planned it. No venue, no catering hall. Just trees, sky, and the people who matter most. If you are reading this, you are one of them.
+    </p>
+    <p class="font-sans font-normal text-cream/90 leading-relaxed text-lg sm:text-xl mt-5">
+      Wear something you can walk in. Bring a jacket. We will handle the rest.
+    </p>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       PHOTOS — 2 placeholders, swap with yours
+  ═══════════════════════════════════════ -->
+  <section class="px-4 sm:px-6 pb-16 sm:pb-20 max-w-4xl mx-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-4">
+
+      <div>
+        <p class="font-sans font-light text-amber/85 text-sm tracking-widest uppercase mb-3">Somewhere near Lisbon, Portugal</p>
+        <div class="photo-frame aspect-[4/5] rounded-sm">
+          <img src="photo-1.jpeg" alt="Sonia & Armin" />
+        </div>
+      </div>
+
+      <div class="sm:mt-12">
+        <p class="font-sans font-light text-amber/85 text-sm tracking-widest uppercase mb-3">Tiruvannamalai, Tamil Nadu, India</p>
+        <div class="photo-frame aspect-[4/5] rounded-sm">
+          <img src="photo-2.jpeg" alt="Sonia & Armin" />
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       RSVP FORM
+  ═══════════════════════════════════════ -->
+  <section id="rsvp" class="py-16 sm:py-24 px-4 sm:px-6 bg-[#14120d]">
+    <div class="max-w-md mx-auto text-center">
+
+      <p class="font-sans font-light text-amber tracking-[0.18em] text-xs uppercase mb-6">RSVP</p>
+      <h2 class="font-serif text-3xl text-cream mb-3">Will You Be There?</h2>
+      <div class="divider mb-8"></div>
+      <p class="font-sans font-light text-parchment text-sm mb-10 leading-relaxed">
+        Let us know you are coming. Drop your name and email below and we will handle the rest.
+      </p>
+
+      <!-- SUCCESS STATE -->
+      <div id="success-msg" class="py-10">
+        <div class="divider mb-6"></div>
+        <p class="font-serif text-xl text-amber italic mb-2">See you out there.</p>
+        <p class="font-sans font-light text-parchment text-sm">You are on the list. We will be in touch.</p>
+        <div class="divider mt-6"></div>
+      </div>
+
+      <!-- FORM -->
+      <form id="rsvp-form" novalidate class="space-y-4 text-left">
+
+        <div>
+          <label class="block font-sans text-xs tracking-widest text-amber/70 uppercase mb-2" for="firstName">
+            First Name
+          </label>
+          <input
+            id="firstName"
+            name="firstName"
+            type="text"
+            placeholder="Your first name"
+            required
+            class="form-input w-full px-4 py-3 rounded-sm text-sm font-light"
+          />
+        </div>
+
+        <div>
+          <label class="block font-sans text-xs tracking-widest text-amber/70 uppercase mb-2" for="email">
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="your@email.com"
+            required
+            class="form-input w-full px-4 py-3 rounded-sm text-sm font-light"
+          />
+        </div>
+
+        <!-- Attendance checkboxes -->
+        <div class="pt-3 pb-1">
+          <p class="font-sans text-xs tracking-widest text-amber/70 uppercase mb-4">I plan to attend</p>
+
+          <label class="flex items-start gap-3 mb-4 cursor-pointer">
+            <input
+              type="checkbox"
+              id="attendFriday"
+              name="attendFriday"
+              class="mt-0.5 w-4 h-4 shrink-0 accent-[#c4903a]"
+            />
+            <span class="font-sans font-light text-parchment text-sm leading-snug">
+              Friday dinner &nbsp;&bull;&nbsp; July 24th
+              <span class="block text-parchment/45 text-xs mt-0.5">Vernon restaurant or winery, details coming soon</span>
+            </span>
+          </label>
+
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              id="attendSaturday"
+              name="attendSaturday"
+              class="mt-0.5 w-4 h-4 shrink-0 accent-[#c4903a]"
+            />
+            <span class="font-sans font-light text-parchment text-sm leading-snug">
+              Main celebration &nbsp;&bull;&nbsp; July 25th
+              <span class="block text-parchment/45 text-xs mt-0.5">Full day event, all details coming soon</span>
+            </span>
+          </label>
+
+          <label class="flex items-start gap-3 mt-4 cursor-pointer">
+            <input
+              type="checkbox"
+              id="camping"
+              name="camping"
+              class="mt-0.5 w-4 h-4 shrink-0 accent-[#c4903a]"
+            />
+            <span class="font-sans font-light text-parchment text-sm leading-snug">
+              I am thinking of camping out at your place
+              <span class="block text-parchment/45 text-xs mt-0.5">Send me the details for that</span>
+            </span>
+          </label>
+        </div>
+
+        <p id="form-error" class="text-red-400 text-xs font-light hidden">
+          Please fill in both fields.
+        </p>
+
+        <button
+          type="submit"
+          id="submit-btn"
+          class="btn-rsvp w-full py-4 rounded-sm mt-2"
+        >
+          Count Me In
+        </button>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════ -->
+  <footer class="py-12 text-center bg-bark">
+    <div class="divider mb-6"></div>
+    <p class="font-serif italic text-amber/60 text-sm">
+      Sonia &amp; Armin
+    </p>
+    <p class="font-sans font-light text-parchment/30 text-xs tracking-widest uppercase mt-2">
+      2026
+    </p>
+  </footer>
+
+  <!-- ═══════════════════════════════════════
+       FORM LOGIC
+  ═══════════════════════════════════════ -->
+  <script>
+    const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/soniakow@gmail.com';
+
+    const form      = document.getElementById('rsvp-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorMsg  = document.getElementById('form-error');
+    const successEl = document.getElementById('success-msg');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const firstName      = document.getElementById('firstName').value.trim();
+      const email          = document.getElementById('email').value.trim();
+      const attendFriday   = document.getElementById('attendFriday').checked ? 'Yes' : 'No';
+      const attendSaturday = document.getElementById('attendSaturday').checked ? 'Yes' : 'No';
+      const camping        = document.getElementById('camping').checked ? 'Yes' : 'No';
+
+      if (!firstName || !email || !email.includes('@')) {
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      errorMsg.classList.add('hidden');
+
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        const res = await fetch(FORMSUBMIT_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            _subject:       'New RSVP: Sonia & Armin Marriage Celebration',
+            _captcha:       'false',
+            'First Name':   firstName,
+            'Email':        email,
+            'Friday Dinner (Jul 24)':  attendFriday,
+            'Main Event (Jul 25)':     attendSaturday,
+            'Camping':                 camping,
+          }),
+        });
+
+        const data = await res.json();
+        if (data.success === 'true' || data.success === true) {
+          form.style.display      = 'none';
+          successEl.style.display = 'block';
+        } else {
+          throw new Error('Failed');
+        }
+
+      } catch (err) {
+        submitBtn.disabled    = false;
+        submitBtn.textContent = 'Count Me In';
+        errorMsg.textContent  = 'Something went wrong. Try again.';
+        errorMsg.classList.remove('hidden');
+      }
+    });
+  </script>
+
+</body>
+</html>
