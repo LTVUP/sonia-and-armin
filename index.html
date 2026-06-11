@@ -370,9 +370,8 @@
        FORM LOGIC
   ═══════════════════════════════════════ -->
   <script>
-    // Web3Forms access key (tied to soniakow@gmail.com).
-    // Paste the key Sonia receives by email between the quotes below.
-    const WEB3FORMS_KEY = 'b631da10-7d63-48e3-b524-d88a5835825d';
+    const WEB3FORMS_KEY_SONIA = 'b631da10-7d63-48e3-b524-d88a5835825d'; // soniakow@gmail.com
+    const WEB3FORMS_KEY_ARMIN = '93758360-f579-4f83-a1a3-85268aa2d7c5'; // af@ltvup.com (for sheet sync)
 
     const form      = document.getElementById('rsvp-form');
     const submitBtn = document.getElementById('submit-btn');
@@ -411,24 +410,32 @@
       submitBtn.textContent = 'Sending...';
 
       try {
-        const res = await fetch('https://api.web3forms.com/submit', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({
-            access_key: WEB3FORMS_KEY,
-            subject:    'New RSVP: Sonia & Armin Marriage Celebration',
-            from_name:  'Wedding RSVP',
-            'First Name':   firstName,
-            'Email':        email,
-            'Friday Dinner (Jul 24)':  attendFriday,
-            'Main Event (Jul 25)':     attendSaturday,
-            'Camping':                 camping,
-            'Adults':                  counts.adults,
-            'Children':                counts.children,
-            'Total in Party':          counts.adults + counts.children,
-            'Comment':                 comment || '(none)',
+        const payload = {
+          subject:   'New RSVP: Sonia & Armin Marriage Celebration',
+          from_name: 'Wedding RSVP',
+          'First Name':              firstName,
+          'Email':                   email,
+          'Friday Dinner (Jul 24)':  attendFriday,
+          'Main Event (Jul 25)':     attendSaturday,
+          'Camping':                 camping,
+          'Adults':                  counts.adults,
+          'Children':                counts.children,
+          'Total in Party':          counts.adults + counts.children,
+          'Comment':                 comment || '(none)',
+        };
+
+        const [res] = await Promise.all([
+          fetch('https://api.web3forms.com/submit', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ ...payload, access_key: WEB3FORMS_KEY_SONIA }),
           }),
-        });
+          fetch('https://api.web3forms.com/submit', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ ...payload, access_key: WEB3FORMS_KEY_ARMIN }),
+          }),
+        ]);
 
         const data = await res.json();
         if (data.success) {
