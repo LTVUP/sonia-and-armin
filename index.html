@@ -147,7 +147,8 @@
 
     <img
       src="hero.jpeg"
-      alt="Lasqueti, BC"
+      alt="Trinity Valley, BC"
+      fetchpriority="high"
       class="absolute inset-0 w-full h-full object-cover object-center"
     />
     <div class="hero-overlay absolute inset-0"></div>
@@ -237,13 +238,13 @@
 
         <div>
           <label class="block font-sans text-xs tracking-widest text-amber/70 uppercase mb-2" for="firstName">
-            First Name
+            Name
           </label>
           <input
             id="firstName"
             name="firstName"
             type="text"
-            placeholder="Your first name"
+            placeholder="Your name"
             required
             class="form-input w-full px-4 py-3 rounded-sm text-sm font-light"
           />
@@ -426,7 +427,7 @@
         const payload = {
           subject:   'New RSVP: Sonia & Armin Marriage Celebration',
           from_name: 'Wedding RSVP',
-          'First Name':              firstName,
+          'Name':                    firstName,
           'Email':                   email,
           'Friday Dinner (Jul 24)':  attendFriday,
           'Main Event (Jul 25)':     attendSaturday,
