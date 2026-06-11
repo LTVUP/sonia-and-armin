@@ -68,6 +68,25 @@
       label { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     }
 
+    .counter-btn {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(196, 144, 58, 0.4);
+      border-radius: 4px;
+      color: #c4903a;
+      font-size: 1.25rem;
+      line-height: 1;
+      background: rgba(240, 234, 216, 0.04);
+      transition: background 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .counter-btn:hover  { background: rgba(196, 144, 58, 0.15); border-color: #c4903a; }
+    .counter-btn:active { background: rgba(196, 144, 58, 0.25); }
+
     .btn-rsvp {
       background: #c4903a;
       color: #1c1a14;
@@ -275,6 +294,49 @@
           </label>
         </div>
 
+        <!-- Party size counters -->
+        <div class="pt-3 pb-1">
+          <p class="font-sans text-xs tracking-widest text-amber/70 uppercase mb-4">How many are coming</p>
+
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-sans font-light text-parchment text-sm leading-snug">
+              Adults
+              <span class="block text-parchment/45 text-xs mt-0.5">Including yourself</span>
+            </span>
+            <div class="flex items-center gap-3">
+              <button type="button" class="counter-btn" data-target="adults" data-step="-1">&minus;</button>
+              <span id="adults-display" class="font-serif text-xl text-cream w-8 text-center">1</span>
+              <button type="button" class="counter-btn" data-target="adults" data-step="1">+</button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="font-sans font-light text-parchment text-sm leading-snug">
+              Children
+              <span class="block text-parchment/45 text-xs mt-0.5">Kids in your party</span>
+            </span>
+            <div class="flex items-center gap-3">
+              <button type="button" class="counter-btn" data-target="children" data-step="-1">&minus;</button>
+              <span id="children-display" class="font-serif text-xl text-cream w-8 text-center">0</span>
+              <button type="button" class="counter-btn" data-target="children" data-step="1">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comment field -->
+        <div class="pt-3">
+          <label class="block font-sans text-xs tracking-widest text-amber/70 uppercase mb-2" for="comment">
+            Anything you want us to know?
+          </label>
+          <textarea
+            id="comment"
+            name="comment"
+            rows="3"
+            placeholder="Leave us a note (optional)"
+            class="form-input w-full px-4 py-3 rounded-sm text-sm font-light resize-none"
+          ></textarea>
+        </div>
+
         <p id="form-error" class="text-red-400 text-xs font-light hidden">
           Please fill in both fields.
         </p>
@@ -317,6 +379,18 @@
     const errorMsg  = document.getElementById('form-error');
     const successEl = document.getElementById('success-msg');
 
+    // ── Counters (adults min 1, children min 0) ──
+    const counts = { adults: 1, children: 0 };
+    const minimums = { adults: 1, children: 0 };
+    document.querySelectorAll('.counter-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const target = btn.dataset.target;
+        const step   = parseInt(btn.dataset.step, 10);
+        counts[target] = Math.max(minimums[target], counts[target] + step);
+        document.getElementById(target + '-display').textContent = counts[target];
+      });
+    });
+
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
 
@@ -325,6 +399,7 @@
       const attendFriday   = document.getElementById('attendFriday').checked ? 'Yes' : 'No';
       const attendSaturday = document.getElementById('attendSaturday').checked ? 'Yes' : 'No';
       const camping        = document.getElementById('camping').checked ? 'Yes' : 'No';
+      const comment        = document.getElementById('comment').value.trim();
 
       if (!firstName || !email || !email.includes('@')) {
         errorMsg.classList.remove('hidden');
@@ -348,6 +423,10 @@
             'Friday Dinner (Jul 24)':  attendFriday,
             'Main Event (Jul 25)':     attendSaturday,
             'Camping':                 camping,
+            'Adults':                  counts.adults,
+            'Children':                counts.children,
+            'Total in Party':          counts.adults + counts.children,
+            'Comment':                 comment || '(none)',
           }),
         });
 
