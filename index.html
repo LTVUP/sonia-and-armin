@@ -179,7 +179,10 @@
   ═══════════════════════════════════════ -->
   <section class="py-16 sm:py-24 px-6 max-w-2xl mx-auto text-center">
     <p class="font-sans font-light text-amber tracking-[0.18em] text-sm uppercase mb-6">The Details</p>
-    <h2 class="font-serif text-4xl sm:text-5xl text-cream mb-6">Out Here in the Wild</h2>
+    <h2 class="font-serif text-4xl sm:text-5xl text-cream mb-4">Out Here in the Wild</h2>
+    <p class="font-sans font-light text-parchment/80 text-xl sm:text-2xl mb-6 tracking-wider">
+      1871 Trinity Valley Road, Lumby BC V0E2G4
+    </p>
     <div class="divider mb-8"></div>
     <p class="font-sans font-normal text-cream/90 leading-relaxed text-lg sm:text-xl">
       We are hosting a marriage celebration at our home, in the middle of nowhere, exactly as we planned it. No venue, no catering hall. Just trees, sky, and the people who matter most. If you are reading this, you are one of them.
@@ -263,6 +266,54 @@
             class="form-input w-full px-4 py-3 rounded-sm text-sm font-light"
           />
         </div>
+
+        <!-- Attend / Not attend -->
+        <div class="pt-3 pb-1">
+          <p class="font-sans text-xs tracking-widest text-amber/70 uppercase mb-4">Will you be joining us?</p>
+
+          <label class="flex items-start gap-3 mb-4 cursor-pointer">
+            <input
+              type="radio"
+              id="willNotAttend"
+              name="willAttend"
+              value="no"
+              class="mt-0.5 w-4 h-4 shrink-0 accent-[#c4903a]"
+            />
+            <span class="font-sans font-light text-parchment text-sm leading-snug">
+              I will not be attending
+            </span>
+          </label>
+
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input
+              type="radio"
+              id="willAttend"
+              name="willAttend"
+              value="yes"
+              class="mt-0.5 w-4 h-4 shrink-0 accent-[#c4903a]"
+            />
+            <span class="font-sans font-light text-parchment text-sm leading-snug">
+              I will be there
+            </span>
+          </label>
+        </div>
+
+        <!-- Decline note — only shown when "I will not be attending" is selected -->
+        <div id="decline-note" class="hidden pt-1">
+          <label class="block font-sans text-xs tracking-widest text-amber/70 uppercase mb-2" for="declineComment">
+            Leave them a note
+          </label>
+          <textarea
+            id="declineComment"
+            name="declineComment"
+            rows="3"
+            placeholder="Send Sonia & Armin a little note (optional)"
+            class="form-input w-full px-4 py-3 rounded-sm text-sm font-light resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Attendee details — only shown when "I will be there" is selected -->
+        <div id="attendee-details" class="hidden space-y-4">
 
         <!-- Attendance checkboxes -->
         <div class="pt-3 pb-1">
@@ -351,6 +402,8 @@
           ></textarea>
         </div>
 
+        </div><!-- /attendee-details -->
+
         <p id="form-error" class="text-red-400 text-xs font-light hidden">
           Please fill in both fields.
         </p>
@@ -387,10 +440,27 @@
     const WEB3FORMS_KEY_SONIA = 'b631da10-7d63-48e3-b524-d88a5835825d'; // soniakow@gmail.com
     const WEB3FORMS_KEY_ARMIN = '93758360-f579-4f83-a1a3-85268aa2d7c5'; // af@ltvup.com (for sheet sync)
 
-    const form      = document.getElementById('rsvp-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const errorMsg  = document.getElementById('form-error');
-    const successEl = document.getElementById('success-msg');
+    const form            = document.getElementById('rsvp-form');
+    const submitBtn       = document.getElementById('submit-btn');
+    const errorMsg        = document.getElementById('form-error');
+    const successEl       = document.getElementById('success-msg');
+    const attendeeDetails = document.getElementById('attendee-details');
+    const declineNote     = document.getElementById('decline-note');
+
+    // ── Attend toggle ──
+    document.querySelectorAll('input[name="willAttend"]').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        if (this.value === 'yes') {
+          attendeeDetails.classList.remove('hidden');
+          declineNote.classList.add('hidden');
+          submitBtn.textContent = 'Count Me In';
+        } else {
+          attendeeDetails.classList.add('hidden');
+          declineNote.classList.remove('hidden');
+          submitBtn.textContent = 'Send My Regrets';
+        }
+      });
+    });
 
     // ── Counters (adults min 1, children min 0) ──
     const counts = { adults: 1, children: 0 };
@@ -407,14 +477,15 @@
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      const firstName      = document.getElementById('firstName').value.trim();
-      const email          = document.getElementById('email').value.trim();
-      const attendFriday   = document.getElementById('attendFriday').checked ? 'Yes' : 'No';
-      const attendSaturday = document.getElementById('attendSaturday').checked ? 'Yes' : 'No';
-      const camping        = document.getElementById('camping').checked ? 'Yes' : 'No';
-      const comment        = document.getElementById('comment').value.trim();
+      const firstName     = document.getElementById('firstName').value.trim();
+      const email         = document.getElementById('email').value.trim();
+      const selectedRadio = document.querySelector('input[name="willAttend"]:checked');
+      const attending     = selectedRadio ? selectedRadio.value === 'yes' : null;
 
-      if (!firstName || !email || !email.includes('@')) {
+      if (!firstName || !email || !email.includes('@') || attending === null) {
+        errorMsg.textContent = attending === null
+          ? 'Please let us know if you will be attending.'
+          : 'Please fill in your name and email.';
         errorMsg.classList.remove('hidden');
         return;
       }
@@ -424,21 +495,48 @@
       submitBtn.textContent = 'Sending...';
 
       try {
-        const payload = {
-          subject:   'New RSVP: Sonia & Armin Marriage Celebration',
-          from_name: 'Wedding RSVP',
-          'Name':                    firstName,
-          'Email':                   email,
-          'Friday Dinner (Jul 24)':  attendFriday,
-          'Main Event (Jul 25)':     attendSaturday,
-          'Camping':                 camping,
-          'Adults':                  counts.adults,
-          'Children':                counts.children,
-          'Total in Party':          counts.adults + counts.children,
-          'Comment':                 comment || '(none)',
-        };
+        let payload;
 
-        const [res] = await Promise.all([
+        if (attending) {
+          const attendFriday   = document.getElementById('attendFriday').checked ? 'Yes' : 'No';
+          const attendSaturday = document.getElementById('attendSaturday').checked ? 'Yes' : 'No';
+          const camping        = document.getElementById('camping').checked ? 'Yes' : 'No';
+          const comment        = document.getElementById('comment').value.trim();
+
+          payload = {
+            subject:   'New RSVP: Sonia & Armin Marriage Celebration',
+            from_name: 'Wedding RSVP',
+            'Name':                    firstName,
+            'Email':                   email,
+            'Attending':               'Yes',
+            'Friday Dinner (Jul 24)':  attendFriday,
+            'Main Event (Jul 25)':     attendSaturday,
+            'Camping':                 camping,
+            'Adults':                  counts.adults,
+            'Children':                counts.children,
+            'Total in Party':          counts.adults + counts.children,
+            'Comment':                 comment || '(none)',
+          };
+        } else {
+          const declineComment = document.getElementById('declineComment').value.trim();
+
+          payload = {
+            subject:   'New RSVP: Sonia & Armin Marriage Celebration',
+            from_name: 'Wedding RSVP',
+            'Name':                    firstName,
+            'Email':                   email,
+            'Attending':               'No',
+            'Friday Dinner (Jul 24)':  'No',
+            'Main Event (Jul 25)':     'No',
+            'Camping':                 'No',
+            'Adults':                  0,
+            'Children':                0,
+            'Total in Party':          0,
+            'Comment':                 declineComment || '(not attending)',
+          };
+        }
+
+        const responses = await Promise.all([
           fetch('https://api.web3forms.com/submit', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -451,8 +549,17 @@
           }),
         ]);
 
-        const data = await res.json();
+        const data = await responses[0].json();
         if (data.success) {
+          const successTitle = successEl.querySelector('p.font-serif');
+          const successBody  = successEl.querySelector('p.font-sans');
+          if (attending) {
+            successTitle.textContent = 'See you then.';
+            successBody.textContent  = 'You are on the list. We will be in touch.';
+          } else {
+            successTitle.textContent = 'We will miss you.';
+            successBody.textContent  = 'Thank you for letting us know.';
+          }
           form.style.display      = 'none';
           successEl.style.display = 'block';
         } else {
@@ -461,7 +568,7 @@
 
       } catch (err) {
         submitBtn.disabled    = false;
-        submitBtn.textContent = 'Count Me In';
+        submitBtn.textContent = attending ? 'Count Me In' : 'Send My Regrets';
         errorMsg.textContent  = 'Something went wrong. Try again.';
         errorMsg.classList.remove('hidden');
       }
